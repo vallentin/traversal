@@ -94,15 +94,15 @@ mod tests {
         let iter = DftPostRev::new(&TREE, |node| node.1.iter());
         let mut iter = iter.map(|(depth, node)| (depth, node.0));
 
-        assert_eq!(iter.next(), Some((2, "A")));
-        assert_eq!(iter.next(), Some((3, "B")));
+        assert_eq!(iter.next(), Some((0, "A")));
+        assert_eq!(iter.next(), Some((1, "B")));
         assert_eq!(iter.next(), Some((2, "C")));
-        assert_eq!(iter.next(), Some((1, "D")));
+        assert_eq!(iter.next(), Some((2, "D")));
         assert_eq!(iter.next(), Some((3, "E")));
-        assert_eq!(iter.next(), Some((2, "F")));
+        assert_eq!(iter.next(), Some((1, "F")));
         assert_eq!(iter.next(), Some((2, "G")));
-        assert_eq!(iter.next(), Some((1, "H")));
-        assert_eq!(iter.next(), Some((0, "I")));
+        assert_eq!(iter.next(), Some((3, "H")));
+        assert_eq!(iter.next(), Some((2, "I")));
         assert_eq!(iter.next(), None);
     }
 

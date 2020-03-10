@@ -76,17 +76,17 @@ mod tests {
     struct Node(&'static str, &'static [Node]);
 
     #[rustfmt::skip]
-    const TREE: Node = Node("I", &[
-        Node("D", &[
-            Node("A", &[]),
-            Node("C", &[
-                Node("B", &[])
+    const TREE: Node = Node("A", &[
+        Node("F", &[
+            Node("I", &[]),
+            Node("G", &[
+                Node("H", &[])
             ])]),
-        Node("H", &[
-            Node("F", &[
+        Node("B", &[
+            Node("D", &[
                 Node("E", &[])
             ]),
-            Node("G", &[])]),
+            Node("C", &[])]),
     ]);
 
     #[test]
@@ -94,15 +94,15 @@ mod tests {
         let iter = DftPostRev::new(&TREE, |node| node.1.iter());
         let mut iter = iter.map(|(depth, node)| (depth, node.0));
 
-        assert_eq!(iter.next(), Some((0, "I")));
-        assert_eq!(iter.next(), Some((1, "H")));
-        assert_eq!(iter.next(), Some((2, "G")));
-        assert_eq!(iter.next(), Some((2, "F")));
-        assert_eq!(iter.next(), Some((3, "E")));
-        assert_eq!(iter.next(), Some((1, "D")));
-        assert_eq!(iter.next(), Some((2, "C")));
-        assert_eq!(iter.next(), Some((3, "B")));
         assert_eq!(iter.next(), Some((2, "A")));
+        assert_eq!(iter.next(), Some((3, "B")));
+        assert_eq!(iter.next(), Some((2, "C")));
+        assert_eq!(iter.next(), Some((1, "D")));
+        assert_eq!(iter.next(), Some((3, "E")));
+        assert_eq!(iter.next(), Some((2, "F")));
+        assert_eq!(iter.next(), Some((2, "G")));
+        assert_eq!(iter.next(), Some((1, "H")));
+        assert_eq!(iter.next(), Some((0, "I")));
         assert_eq!(iter.next(), None);
     }
 

@@ -68,28 +68,30 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::DftPost;
+
     use super::*;
 
     #[derive(PartialEq, Debug)]
     struct Node(&'static str, &'static [Node]);
 
+    #[rustfmt::skip]
+    const TREE: Node = Node("I", &[
+        Node("D", &[
+            Node("A", &[]),
+            Node("C", &[
+                Node("B", &[])
+            ])]),
+        Node("H", &[
+            Node("F", &[
+                Node("E", &[])
+            ]),
+            Node("G", &[])]),
+    ]);
+
     #[test]
     fn dft_post_rev() {
-        #[rustfmt::skip]
-        let tree = Node("I", &[
-            Node("D", &[
-                Node("A", &[]),
-                Node("C", &[
-                    Node("B", &[])
-                ])]),
-            Node("H", &[
-                Node("F", &[
-                    Node("E", &[])
-                ]),
-                Node("G", &[])]),
-        ]);
-
-        let iter = DftPostRev::new(&tree, |node| node.1.iter());
+        let iter = DftPostRev::new(&TREE, |node| node.1.iter());
         let mut iter = iter.map(|(depth, node)| (depth, node.0));
 
         assert_eq!(iter.next(), Some((0, "I")));
@@ -102,5 +104,24 @@ mod tests {
         assert_eq!(iter.next(), Some((3, "B")));
         assert_eq!(iter.next(), Some((2, "A")));
         assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn dft_post() {
+        let mut iter1 = DftPostRev::new(&TREE, |node| node.1.iter());
+
+        let iter2 = DftPost::new(&TREE, |node| node.1.iter()).collect::<Vec<_>>();
+        let mut iter2 = iter2.into_iter().rev();
+
+        loop {
+            let next1 = iter1.next();
+            let next2 = iter2.next();
+
+            if next1.is_none() && next2.is_none() {
+                break;
+            }
+
+            assert_eq!(next1, next2);
+        }
     }
 }

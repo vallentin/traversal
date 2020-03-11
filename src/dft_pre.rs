@@ -1,6 +1,8 @@
 use std::iter::{Extend, FusedIterator};
 
-/// Depth-First Traversal in Pre-Order.
+/// [Depth-First Traversal] in Pre-Order.
+///
+/// [Depth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
 ///
 /// # Cycles
 ///
@@ -64,11 +66,36 @@ where
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    /// Create as `DftPre`.
+    /// Creates a `DftPre`, where `root` is the
+    /// starting `Node`.
+    ///
+    /// The `children` [`Fn`] is (lazily) called
+    /// for each `Node` as needed, where the
+    /// returned [`Iterator`] produces the child
+    /// `Node`s for the given `Node`.
+    ///
+    /// [`Iterator`]: https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html
     ///
     /// *[See `DftPre` for more information.][`DftPre`]*
     ///
     /// [`DftPre`]: struct.DftPre.html
+    ///
+    /// # "`FnOnce`"
+    ///
+    /// The [`Fn`] is a [`FnOnce`] from the point-of-view of
+    /// a `Node`, as `children` is at most called once for
+    /// each individual `Node`.
+    ///
+    /// [`Fn`]: https://doc.rust-lang.org/std/ops/trait.Fn.html
+    /// [`FnOnce`]: https://doc.rust-lang.org/std/ops/trait.FnOnce.html
+    ///
+    /// # `FusedIterator`
+    ///
+    /// While `DftPre` does not require [`FusedIterator`],
+    /// it assumes that no `Node`s are produced after
+    /// a `None`.
+    ///
+    /// [`FusedIterator`]: https://doc.rust-lang.org/stable/std/iter/trait.FusedIterator.html
     #[inline]
     pub fn new(root: &'a T, children: F) -> Self {
         Self {

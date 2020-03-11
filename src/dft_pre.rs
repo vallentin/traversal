@@ -77,28 +77,73 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::slice::Iter;
+
     use super::*;
 
     struct Node(&'static str, &'static [Node]);
 
+    trait NodeNoSize<'a, T: 'a> {
+        type Iter: Iterator<Item = &'a T>;
+
+        fn title(&self) -> &'static str;
+        fn iter_children(&self) -> Self::Iter;
+    }
+
+    impl<'a> NodeNoSize<'a, Node> for Node {
+        type Iter = Iter<'a, Self>;
+
+        #[inline]
+        fn title(&self) -> &'static str {
+            self.0
+        }
+
+        #[inline]
+        fn iter_children(&self) -> Self::Iter {
+            self.1.iter()
+        }
+    }
+
+    #[rustfmt::skip]
+    const TREE: Node = Node("A", &[
+        Node("B", &[
+            Node("C", &[]),
+            Node("D", &[
+                Node("E", &[])
+            ])]),
+        Node("F", &[
+            Node("G", &[
+                Node("H", &[])
+            ]),
+            Node("I", &[])]),
+    ]);
+
     #[test]
     fn dft_pre() {
-        #[rustfmt::skip]
-        let tree = Node("A", &[
-            Node("B", &[
-                Node("C", &[]),
-                Node("D", &[
-                    Node("E", &[])
-                ])]),
-            Node("F", &[
-                Node("G", &[
-                    Node("H", &[])
-                ]),
-                Node("I", &[])]),
-        ]);
-
-        let iter = DftPre::new(&tree, |node| node.1.iter());
+        let iter = DftPre::new(&TREE, |node| node.1.iter());
         let mut iter = iter.map(|(depth, node)| (depth, node.0));
+
+        assert_eq!(iter.next(), Some((0, "A")));
+        assert_eq!(iter.next(), Some((1, "B")));
+        assert_eq!(iter.next(), Some((2, "C")));
+        assert_eq!(iter.next(), Some((2, "D")));
+        assert_eq!(iter.next(), Some((3, "E")));
+        assert_eq!(iter.next(), Some((1, "F")));
+        assert_eq!(iter.next(), Some((2, "G")));
+        assert_eq!(iter.next(), Some((3, "H")));
+        assert_eq!(iter.next(), Some((2, "I")));
+        assert_eq!(iter.next(), None);
+    }
+
+    #[test]
+    fn dft_pre_no_size() {
+        let root: &dyn NodeNoSize<Node, Iter = Iter<Node>> = &TREE;
+
+        let iter = DftPre::new(root, |node| {
+            node.iter_children()
+                .map(|node| node as &dyn NodeNoSize<Node, Iter = Iter<Node>>)
+        });
+        let mut iter = iter.map(|(depth, node)| (depth, node.title()));
 
         assert_eq!(iter.next(), Some((0, "A")));
         assert_eq!(iter.next(), Some((1, "B")));

@@ -1,0 +1,18 @@
+[package]
+name = "traversal"
+version = "0.1.0"
+authors = ["Christian Vallentin"]
+edition = "2018"
+description = "Generic and lazy tree traversal algorithms"
+keywords = ["tree", "graph", "traversal", "traverse", "search"]
+categories = ["algorithms", "data-structures"]
+license = "MIT"
+repository = "https://github.com/vallentin/traversal"
+documentation = "https://docs.rs/traversal"
+readme = "README.md"
+exclude = [".travis.yml"]
+
+[badges]
+travis-ci = { repository = "vallentin/traversal" }
+
+[dependencies]

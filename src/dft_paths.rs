@@ -13,6 +13,41 @@ use crate::DftPre;
 /// [`Iterator`].
 ///
 /// [`Iterator`]: https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html
+///
+/// # Example
+///
+/// ```
+/// use traversal::DftPaths;
+///
+/// struct Node(&'static str, &'static [Node]);
+///
+/// let tree = Node("A", &[
+///     Node("B", &[
+///         Node("C", &[]),
+///         Node("D", &[])
+///     ]),
+///     Node("E", &[
+///         Node("F", &[]),
+///         Node("G", &[])
+///     ]),
+/// ]);
+///
+/// // `&tree` represents the root `Node`.
+/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // an `Iterator` to get the child `Node`s.
+/// let iter = DftPaths::new(&tree, |node| node.1.iter());
+///
+/// // Map `Iterator<Item = Vec<&Node>>` into `Iterator<Item = Vec<&str>>`
+/// let mut iter = iter.map(|path| path.iter().map(|node| node.0).collect::<Vec<_>>());
+///
+/// assert_eq!(iter.next(), Some(vec!["A", "B"]));
+/// assert_eq!(iter.next(), Some(vec!["A", "B", "C"]));
+/// assert_eq!(iter.next(), Some(vec!["A", "B", "D"]));
+/// assert_eq!(iter.next(), Some(vec!["A", "E"]));
+/// assert_eq!(iter.next(), Some(vec!["A", "E", "F"]));
+/// assert_eq!(iter.next(), Some(vec!["A", "E", "G"]));
+/// assert_eq!(iter.next(), None);
+/// ```
 #[allow(missing_debug_implementations)]
 #[derive(Clone)]
 pub struct DftPaths<'a, T, F, I>

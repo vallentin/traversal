@@ -10,6 +10,42 @@ use std::iter::{Extend, FusedIterator};
 /// [`Iterator`].
 ///
 /// [`Iterator`]: https://doc.rust-lang.org/stable/std/iter/trait.Iterator.html
+///
+/// # Example
+///
+/// ```
+/// use traversal::DftPre;
+///
+/// struct Node(&'static str, &'static [Node]);
+///
+/// let tree = Node("A", &[
+///     Node("B", &[
+///         Node("C", &[]),
+///         Node("D", &[])
+///     ]),
+///     Node("E", &[
+///         Node("F", &[]),
+///         Node("G", &[])
+///     ]),
+/// ]);
+///
+/// // `&tree` represents the root `Node`.
+/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // an `Iterator` to get the child `Node`s.
+/// let iter = DftPre::new(&tree, |node| node.1.iter());
+///
+/// // Map `Iterator<Item = &Node>` into `Iterator<Item = &str>`
+/// let mut iter = iter.map(|(depth, node)| (depth, node.0));
+///
+/// assert_eq!(iter.next(), Some((0, "A")));
+/// assert_eq!(iter.next(), Some((1, "B")));
+/// assert_eq!(iter.next(), Some((2, "C")));
+/// assert_eq!(iter.next(), Some((2, "D")));
+/// assert_eq!(iter.next(), Some((1, "E")));
+/// assert_eq!(iter.next(), Some((2, "F")));
+/// assert_eq!(iter.next(), Some((2, "G")));
+/// assert_eq!(iter.next(), None);
+/// ```
 #[allow(missing_debug_implementations)]
 #[derive(Clone)]
 pub struct DftPre<'a, T, F, I>

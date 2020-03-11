@@ -17,6 +17,7 @@ use crate::DftPre;
 #[derive(Clone)]
 pub struct DftPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -26,6 +27,7 @@ where
 
 impl<'a, T, F, I> DftPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -48,6 +50,7 @@ where
 
 impl<'a, T, F, I> Iterator for DftPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -68,6 +71,7 @@ where
 
 impl<'a, T, F, I> FusedIterator for DftPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {

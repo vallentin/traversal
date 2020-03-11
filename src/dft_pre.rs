@@ -14,6 +14,7 @@ use std::iter::{Extend, FusedIterator};
 #[derive(Clone)]
 pub struct DftPre<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -23,6 +24,7 @@ where
 
 impl<'a, T, F, I> DftPre<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -42,6 +44,7 @@ where
 
 impl<'a, T, F, I> Iterator for DftPre<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -66,6 +69,7 @@ where
 
 impl<'a, T, F, I> FusedIterator for DftPre<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {

@@ -18,6 +18,7 @@ use crate::DftPre;
 #[derive(Clone)]
 pub struct DftLongestPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -27,6 +28,7 @@ where
 
 impl<'a, T, F, I> DftLongestPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -49,6 +51,7 @@ where
 
 impl<'a, T, F, I> Iterator for DftLongestPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -79,6 +82,7 @@ where
 
 impl<'a, T, F, I> FusedIterator for DftLongestPaths<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {

@@ -15,6 +15,7 @@ use std::iter::FusedIterator;
 #[derive(Clone)]
 pub struct DftPost<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -27,6 +28,7 @@ where
 
 impl<'a, T, F, I> DftPost<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -48,6 +50,7 @@ where
 
 impl<'a, T, F, I> Iterator for DftPost<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -99,6 +102,7 @@ where
 
 impl<'a, T, F, I> FusedIterator for DftPost<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {

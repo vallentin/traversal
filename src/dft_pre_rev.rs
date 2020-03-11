@@ -53,6 +53,7 @@ use std::iter::FusedIterator;
 #[derive(Clone)]
 pub struct DftPreRev<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -65,6 +66,7 @@ where
 
 impl<'a, T, F, I> DftPreRev<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -111,6 +113,7 @@ where
 
 impl<'a, T, F, I> Iterator for DftPreRev<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
@@ -162,6 +165,7 @@ where
 
 impl<'a, T, F, I> FusedIterator for DftPreRev<'a, T, F, I>
 where
+    T: ?Sized,
     F: Fn(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {

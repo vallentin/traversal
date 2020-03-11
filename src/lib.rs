@@ -1,4 +1,109 @@
-//! Traversal
+//! Traversal implements generic and lazy tree traversal algorithms.
+//!
+//! Includes:
+//! - [Breadth-First Traversal] ([`Bft`])
+//! - [Depth-First Traversal] in Pre-Order ([`DftPre`])
+//! - [Depth-First Traversal] in Post-Order ([`DftPost`])
+//! - Reverse [Depth-First Traversal] in Pre-Order ([`DftPreRev`])
+//! - Reverse [Depth-First Traversal] in Post-Order ([`DftPostRev`])
+//! <!---->
+//! - All Paths ([`DftPaths`])
+//! - Longest Paths ([`DftLongestPaths`])
+//!
+//! [Breadth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
+//! [Depth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
+//!
+//! ## Generic
+//!
+//! Traversal uses [generics] (or [type parameters]) to be
+//! flexible to use, and easy to implement and fit into existing
+//! architecture.
+//!
+//! [generics]: https://doc.rust-lang.org/rust-by-example/generics.html
+//! [type parameters]: https://doc.rust-lang.org/reference/types/parameters.html
+//!
+//! ## Laziness
+//!
+//! Laziness or [lazy evaluation] refers to evaluation being delayed
+//! until needed.
+//!
+//! Traversal delays processing `Node`s and fetching child `Node`s
+//! until [`Iterator::next`][`next`] is called.
+//! When [`next`] is called, then traversal only processes the
+//! `Node`s required for this iteration.
+//!
+//! [lazy evaluation]: https://en.wikipedia.org/wiki/Lazy_evaluation
+//!
+//! *From Rust's docs:*
+//!
+//! > *Iterators (and iterator [adapters]) are lazy. This means that just
+//! > creating an iterator doesn't do a whole lot. Nothing really happens
+//! > until you call [`next`].*
+//! >
+//! > &mdash; [`Iterator`] - [Laziness]
+//!
+//! [`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html
+//! [`next`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html#tymethod.next
+//!
+//! [Laziness]: https://doc.rust-lang.org/std/iter/index.html#laziness
+//! [adapters]: https://doc.rust-lang.org/std/iter/index.html#adapters
+//!
+//! # Algorithms
+//!
+//! ```test
+//!      A
+//!     / \
+//!    B   C
+//!   / \ / \
+//!  D  E F  G
+//! ```
+//!
+//! Given the above tree, then the following are the orders,
+//! that each individual iterator / traversal algorithm produces.
+//!
+//! | Algorithm | Order |
+//! |-----------|-------|
+//! | [`Bft`]        (Breadth-First Traversal)                     | A, B, C, D, E, F, G |
+//! | [`DftPre`]     (Depth-First Traversal in Pre-Order)          | A, B, D, E, C, F, G |
+//! | [`DftPost`]    (Depth-First Traversal in Post-Order)         | D, E, B, F, G, C, A |
+//! | [`DftPreRev`]  (Reverse Depth-First Traversal in Pre-Order)  | G, F, C, E, D, B, A |
+//! | [`DftPostRev`] (Reverse Depth-First Traversal in Post-Order) | A, C, G, F, B, E, D |
+//!
+//! *See each individual algorithm for code examples.*
+//!
+//! [`Bft`]: struct.Bft.html
+//! [`DftPre`]: struct.DftPre.html
+//! [`DftPost`]: struct.DftPost.html
+//! [`DftPreRev`]: struct.DftPreRev.html
+//! [`DftPostRev`]: struct.DftPostRev.html
+//!
+//! ## All Paths and Longest Paths
+//!
+//! [`DftPaths`] and [`DftLongestPaths`] are utilities for
+//! iterating all paths and the longest paths in a tree.
+//!
+//! *Given the same tree as the previous examples, then
+//! [`DftPaths`] and [`DftLongestPaths`] produce the
+//! following paths.*
+//!
+//! [`DftPaths`]:
+//! - A, B
+//! - A, B, D
+//! - A, B, E
+//! - A, C
+//! - A, C, F
+//! - A, C, G
+//!
+//! [`DftLongestPaths`]:
+//! - A, B, D
+//! - A, B, E
+//! - A, C, F
+//! - A, C, G
+//!
+//! *See each individual algorithm for code examples.*
+//!
+//! [`DftPaths`]: struct.DftPaths.html
+//! [`DftLongestPaths`]: struct.DftLongestPaths.html
 
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
@@ -345,4 +450,96 @@ where
     I: Iterator<Item = &'a T>,
 {
     DftLongestPaths::new(root, children)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct Node(&'static str, &'static [Node]);
+
+    #[rustfmt::skip]
+    const TREE: Node = Node("A", &[
+        Node("B", &[
+            Node("D", &[]),
+            Node("E", &[])
+        ]),
+        Node("C", &[
+            Node("F", &[]),
+            Node("G", &[])
+        ]),
+    ]);
+
+    #[test]
+    fn lib_example() {
+        // If this example is changed, then update
+        // both code and output in lib.rs and README.md.
+
+        assert_eq!(
+            bft(&TREE, |node| node.1.iter())
+                .map(|(_, node)| node.0)
+                .collect::<Vec<_>>(),
+            vec!["A", "B", "C", "D", "E", "F", "G"],
+        );
+
+        assert_eq!(
+            dft_pre(&TREE, |node| node.1.iter())
+                .map(|(_, node)| node.0)
+                .collect::<Vec<_>>(),
+            vec!["A", "B", "D", "E", "C", "F", "G"],
+        );
+
+        assert_eq!(
+            dft_post(&TREE, |node| node.1.iter())
+                .map(|(_, node)| node.0)
+                .collect::<Vec<_>>(),
+            vec!["D", "E", "B", "F", "G", "C", "A"],
+        );
+
+        assert_eq!(
+            dft_pre_rev(&TREE, |node| node.1.iter())
+                .map(|(_, node)| node.0)
+                .collect::<Vec<_>>(),
+            vec!["G", "F", "C", "E", "D", "B", "A"],
+        );
+
+        assert_eq!(
+            dft_post_rev(&TREE, |node| node.1.iter())
+                .map(|(_, node)| node.0)
+                .collect::<Vec<_>>(),
+            vec!["A", "C", "G", "F", "B", "E", "D"],
+        );
+    }
+
+    #[test]
+    fn lib_example_paths() {
+        // If this example is changed, then update
+        // both code and output in lib.rs and README.md.
+
+        assert_eq!(
+            DftPaths::new(&TREE, |node| node.1.iter())
+                .map(|path| path.iter().map(|node| node.0).collect::<Vec<_>>())
+                .collect::<Vec<_>>(),
+            vec![
+                vec!["A", "B"],
+                vec!["A", "B", "D"],
+                vec!["A", "B", "E"],
+                vec!["A", "C"],
+                vec!["A", "C", "F"],
+                vec!["A", "C", "G"],
+            ],
+        );
+
+        assert_eq!(
+            DftLongestPaths::new(&TREE, |node| node.1.iter())
+                .map(|path| path.iter().map(|node| node.0).collect::<Vec<_>>())
+                .collect::<Vec<_>>(),
+            vec![
+                vec!["A", "B", "D"],
+                vec!["A", "B", "E"],
+                vec!["A", "C", "F"],
+                vec!["A", "C", "G"],
+            ],
+        );
+    }
 }

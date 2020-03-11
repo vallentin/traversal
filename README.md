@@ -1,5 +1,10 @@
 # traversal
 
+[![Build Status](https://travis-ci.org/vallentin/traversal.svg?branch=master)](https://travis-ci.org/vallentin/traversal)
+[![Latest Version](https://img.shields.io/crates/v/traversal.svg)](https://crates.io/crates/traversal)
+[![Docs](https://docs.rs/traversal/badge.svg)](https://docs.rs/traversal)
+[![License](https://img.shields.io/github/license/vallentin/traversal.svg)](https://github.com/vallentin/traversal)
+
 Traversal implements generic and lazy tree traversal algorithms.
 
 Includes:
@@ -15,7 +20,7 @@ Includes:
 [Breadth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
 [Depth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
 
-## Generic
+### Generic
 
 Traversal uses [generics] (or [type parameters]) to be
 flexible to use, and easy to implement and fit into existing
@@ -24,7 +29,7 @@ architecture.
 [generics]: https://doc.rust-lang.org/rust-by-example/generics.html
 [type parameters]: https://doc.rust-lang.org/reference/types/parameters.html
 
-## Laziness
+### Laziness
 
 Laziness or [lazy evaluation] refers to evaluation being delayed
 until needed.
@@ -50,7 +55,7 @@ When [`next`] is called, then traversal only processes the
 [Laziness]: https://doc.rust-lang.org/std/iter/index.html#laziness
 [adapters]: https://doc.rust-lang.org/std/iter/index.html#adapters
 
-# Algorithms
+## Algorithms
 
 ```test
      A
@@ -79,7 +84,7 @@ that each individual iterator / traversal algorithm produces.
 [`DftPreRev`]: https://docs.rs/traversal/*/traversal/struct.DftPreRev.html
 [`DftPostRev`]: https://docs.rs/traversal/*/traversal/struct.DftPostRev.html
 
-## All Paths and Longest Paths
+### All Paths and Longest Paths
 
 [`DftPaths`] and [`DftLongestPaths`] are utilities for
 iterating all paths and the longest paths in a tree.

@@ -171,3 +171,43 @@ where
     T: Eq + Hash,
 {
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(PartialEq, Eq, Hash)]
+    struct Vertex(&'static str, Vec<usize>);
+
+    #[test]
+    fn dft_cycles() {
+        //   A <----+
+        //  /  \    |
+        // B >- D >-+
+        //  \  /    |
+        //   C >----+
+        //
+        // Cycles:
+        // - A -> B -> C -> A
+        // - A -> B -> C -> D -> A
+        // - A -> B -> D -> A
+        // - A -> D -> A
+        let graph = vec![
+            Vertex("A", vec![1, 3]), // 0
+            Vertex("B", vec![2, 3]), // 1
+            Vertex("C", vec![0, 3]), // 2
+            Vertex("D", vec![0]),    // 3
+        ];
+
+        let start = &graph[0]; // A
+
+        let cycles = DftCycles::new(start, |vertex| vertex.1.iter().map(|&i| &graph[i]));
+        let mut cycles = cycles.map(|path| path.iter().map(|vertex| vertex.0).collect::<Vec<_>>());
+
+        assert_eq!(cycles.next(), Some(vec!["A", "B", "C"]));
+        assert_eq!(cycles.next(), Some(vec!["A", "B", "C", "D"]));
+        assert_eq!(cycles.next(), Some(vec!["A", "B", "D"]));
+        assert_eq!(cycles.next(), Some(vec!["A", "D"]));
+        assert_eq!(cycles.next(), None);
+    }
+}

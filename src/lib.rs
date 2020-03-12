@@ -111,6 +111,7 @@
 #![warn(clippy::all)]
 
 mod bft;
+mod dft_cycles;
 mod dft_longest_paths;
 mod dft_paths;
 mod dft_post;
@@ -119,12 +120,15 @@ mod dft_pre;
 mod dft_pre_rev;
 
 pub use bft::*;
+pub use dft_cycles::*;
 pub use dft_longest_paths::*;
 pub use dft_paths::*;
 pub use dft_post::*;
 pub use dft_post_rev::*;
 pub use dft_pre::*;
 pub use dft_pre_rev::*;
+
+use std::hash::Hash;
 
 /// *[This is a shorthand for `Bft::new`, see `Bft` for more information.][`Bft`]*
 ///
@@ -450,6 +454,63 @@ where
     I: Iterator<Item = &'a T>,
 {
     DftLongestPaths::new(root, iter_children)
+}
+
+/// *[This is a shorthand for `DftCycles::new`, see `DftCycles` for more information.][`DftCycles`]*
+///
+/// [`DftCycles`]: struct.DftCycles.html
+///
+/// # Example
+///
+/// ```
+/// #[derive(PartialEq, Eq, Hash)]
+/// struct Vertex(&'static str, Vec<usize>);
+///
+/// //   A <-+
+/// //  /|\  |
+/// // B | C |
+/// //  \|/  |
+/// //   D >-+
+/// //
+/// // Cycles:
+/// // - A -> B -> D -> A
+/// // - A -> D -> A
+/// // - A -> C -> D -> A
+/// let graph = vec![
+///     Vertex("A", vec![1, 3, 2]), // 0
+///     Vertex("B", vec![3]),       // 1
+///     Vertex("C", vec![3]),       // 2
+///     Vertex("D", vec![0]),       // 3
+/// ];
+///
+/// let start = &graph[0]; // A
+///
+/// // `&tree` represents the root `Vertex`.
+/// // The `FnMut(&Vertex) -> Iterator<Item = &Vertex>` returns
+/// // an `Iterator` to get the connected vertices.
+/// let mut cycles = traversal::dft_cycles(start, |vertex| {
+///     vertex.1.iter().map(|&i| {
+///         &graph[i]
+///     })
+/// });
+///
+/// // Map `Iterator<Item = Vec<&Vertex>>` into `Iterator<Item = Vec<&str>>`
+/// let mut cycles = cycles.map(|path| path.iter().map(|vertex| vertex.0).collect::<Vec<_>>());
+///
+/// assert_eq!(cycles.next(), Some(vec!["A", "B", "D"]));
+/// assert_eq!(cycles.next(), Some(vec!["A", "D"]));
+/// assert_eq!(cycles.next(), Some(vec!["A", "C", "D"]));
+/// assert_eq!(cycles.next(), None);
+/// ```
+#[inline]
+pub fn dft_cycles<'a, T, F, I>(root: &'a T, iter_children: F) -> DftCycles<'a, T, F, I>
+where
+    T: ?Sized,
+    F: FnMut(&'a T) -> I,
+    I: Iterator<Item = &'a T>,
+    T: Eq + Hash,
+{
+    DftCycles::new(root, iter_children)
 }
 
 #[cfg(test)]

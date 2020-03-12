@@ -9,6 +9,7 @@
 //! <!---->
 //! - All Paths ([`DftPaths`])
 //! - Longest Paths ([`DftLongestPaths`])
+//! - All Cycles (Paths) ([`DftCycles`])
 //!
 //! [Breadth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
 //! [Depth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
@@ -50,7 +51,7 @@
 //!
 //! # Algorithms
 //!
-//! ```test
+//! ```text
 //!      A
 //!     / \
 //!    B   C
@@ -104,6 +105,24 @@
 //!
 //! [`DftPaths`]: struct.DftPaths.html
 //! [`DftLongestPaths`]: struct.DftLongestPaths.html
+//!
+//! ## Cycles
+//!
+//! ```text
+//!   A <---+
+//!  / \    |
+//! B   D >-+
+//! |   |   |
+//! C   E >-+
+//! ```
+//!
+//! [`DftCycles`]:
+//! - A -> D (*implies D is connected with A*)
+//! - A -> D -> E
+//!
+//! *See each individual algorithm for code examples.*
+//!
+//! [`DftCycles`]: struct.DftCycles.html
 
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
@@ -517,6 +536,9 @@ where
 mod tests {
     use super::*;
 
+    #[derive(PartialEq, Eq, Hash)]
+    struct Vertex(&'static str, Vec<usize>);
+
     struct Node(&'static str, &'static [Node]);
 
     #[rustfmt::skip]
@@ -602,5 +624,37 @@ mod tests {
                 vec!["A", "C", "G"],
             ],
         );
+    }
+
+    #[test]
+    fn lib_example_cycles() {
+        // If this example is changed, then update
+        // both code and output in lib.rs and README.md.
+
+        //   A <---+
+        //  / \    |
+        // B   D >-+
+        // |   |   |
+        // C   E >-+
+        //
+        // Cycles:
+        // - A -> D -> A
+        // - A -> D -> E -> A
+        let graph = vec![
+            Vertex("A", vec![1, 3]), // 0
+            Vertex("B", vec![2]),    // 1
+            Vertex("C", vec![]),     // 2
+            Vertex("D", vec![0, 4]), // 3
+            Vertex("E", vec![0]),    // 4
+        ];
+
+        let start = &graph[0]; // A
+
+        let cycles = DftCycles::new(start, |vertex| vertex.1.iter().map(|&i| &graph[i]));
+        let mut cycles = cycles.map(|path| path.iter().map(|vertex| vertex.0).collect::<Vec<_>>());
+
+        assert_eq!(cycles.next(), Some(vec!["A", "D"]));
+        assert_eq!(cycles.next(), Some(vec!["A", "D", "E"]));
+        assert_eq!(cycles.next(), None);
     }
 }

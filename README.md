@@ -16,6 +16,7 @@ Includes:
 <!---->
 - All Paths ([`DftPaths`])
 - Longest Paths ([`DftLongestPaths`])
+- All Cycles (Paths) ([`DftCycles`])
 
 [Breadth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
 [Depth-First Traversal]: https://en.wikipedia.org/wiki/Tree_traversal
@@ -57,7 +58,7 @@ When [`next`] is called, then traversal only processes the
 
 ## Algorithms
 
-```test
+```text
      A
     / \
    B   C
@@ -111,3 +112,21 @@ following paths.*
 
 [`DftPaths`]: https://docs.rs/traversal/*/traversal/struct.DftPaths.html
 [`DftLongestPaths`]: https://docs.rs/traversal/*/traversal/struct.DftLongestPaths.html
+
+## Cycles
+
+```text
+  A <---+
+ / \    |
+B   D >-+
+|   |   |
+C   E >-+
+```
+
+[`DftCycles`]:
+- A -> D (*implies D is connected with A*)
+- A -> D -> E
+
+*See each individual algorithm for code examples.*
+
+[`DftCycles`]: https://docs.rs/traversal/*/traversal/struct.DftCycles.html

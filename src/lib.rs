@@ -147,7 +147,7 @@ pub use dft_pre_rev::*;
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::bft(&tree, |node| node.1.iter());
 ///
@@ -164,13 +164,13 @@ pub use dft_pre_rev::*;
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn bft<'a, T, F, I>(root: &'a T, children: F) -> Bft<'a, T, F, I>
+pub fn bft<'a, T, F, I>(root: &'a T, iter_children: F) -> Bft<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    Bft::new(root, children)
+    Bft::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftPre::new`, see `DftPre` for more information.][`DftPre`]*
@@ -194,7 +194,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_pre(&tree, |node| node.1.iter());
 ///
@@ -211,13 +211,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_pre<'a, T, F, I>(root: &'a T, children: F) -> DftPre<'a, T, F, I>
+pub fn dft_pre<'a, T, F, I>(root: &'a T, iter_children: F) -> DftPre<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftPre::new(root, children)
+    DftPre::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftPost::new`, see `DftPost` for more information.][`DftPost`]*
@@ -241,7 +241,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_post(&tree, |node| node.1.iter());
 ///
@@ -258,13 +258,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_post<'a, T, F, I>(root: &'a T, children: F) -> DftPost<'a, T, F, I>
+pub fn dft_post<'a, T, F, I>(root: &'a T, iter_children: F) -> DftPost<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftPost::new(root, children)
+    DftPost::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftPreRev::new`, see `DftPreRev` for more information.][`DftPreRev`]*
@@ -289,7 +289,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_pre_rev(&tree, |node| node.1.iter());
 ///
@@ -306,13 +306,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_pre_rev<'a, T, F, I>(root: &'a T, children: F) -> DftPreRev<'a, T, F, I>
+pub fn dft_pre_rev<'a, T, F, I>(root: &'a T, iter_children: F) -> DftPreRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftPreRev::new(root, children)
+    DftPreRev::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftPostRev::new`, see `DftPostRev` for more information.][`DftPostRev`]*
@@ -336,7 +336,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_post_rev(&tree, |node| node.1.iter());
 ///
@@ -353,13 +353,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_post_rev<'a, T, F, I>(root: &'a T, children: F) -> DftPostRev<'a, T, F, I>
+pub fn dft_post_rev<'a, T, F, I>(root: &'a T, iter_children: F) -> DftPostRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftPostRev::new(root, children)
+    DftPostRev::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftPaths::new`, see `DftPaths` for more information.][`DftPaths`]*
@@ -383,7 +383,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_paths(&tree, |node| node.1.iter());
 ///
@@ -399,13 +399,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_paths<'a, T, F, I>(root: &'a T, children: F) -> DftPaths<'a, T, F, I>
+pub fn dft_paths<'a, T, F, I>(root: &'a T, iter_children: F) -> DftPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftPaths::new(root, children)
+    DftPaths::new(root, iter_children)
 }
 
 /// *[This is a shorthand for `DftLongestPaths::new`, see `DftLongestPaths` for more information.][`DftLongestPaths`]*
@@ -429,7 +429,7 @@ where
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = traversal::dft_longest_paths(&tree, |node| node.1.iter());
 ///
@@ -443,13 +443,13 @@ where
 /// assert_eq!(iter.next(), None);
 /// ```
 #[inline]
-pub fn dft_longest_paths<'a, T, F, I>(root: &'a T, children: F) -> DftLongestPaths<'a, T, F, I>
+pub fn dft_longest_paths<'a, T, F, I>(root: &'a T, iter_children: F) -> DftLongestPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    DftLongestPaths::new(root, children)
+    DftLongestPaths::new(root, iter_children)
 }
 
 #[cfg(test)]

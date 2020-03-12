@@ -33,7 +33,7 @@ use std::iter::FusedIterator;
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = DftPreRev::new(&tree, |node| node.1.iter());
 ///
@@ -54,26 +54,26 @@ use std::iter::FusedIterator;
 pub struct DftPreRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
-    /// `children(self.queue[i])` has been called for all `i < visited`
+    /// `iter_children(self.queue[i])` has been called for all `i < visited`
     visited: usize,
     current_depth: usize,
     queue: VecDeque<(usize, &'a T)>,
-    children: F,
+    iter_children: F,
 }
 
 impl<'a, T, F, I> DftPreRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     /// Creates a `DftPreRev`, where `root` is the
     /// starting `Node`.
     ///
-    /// The `children` [`Fn`] is (lazily) called
+    /// The `iter_children` [`FnMut`] is (lazily) called
     /// for each `Node` as needed, where the
     /// returned [`Iterator`] produces the child
     /// `Node`s for the given `Node`.
@@ -86,11 +86,11 @@ where
     ///
     /// # "`FnOnce`"
     ///
-    /// The [`Fn`] is a [`FnOnce`] from the point-of-view of
-    /// a `Node`, as `children` is at most called once for
+    /// The [`FnMut`] is a [`FnOnce`] from the point-of-view of
+    /// a `Node`, as `iter_children` is at most called once for
     /// each individual `Node`.
     ///
-    /// [`Fn`]: https://doc.rust-lang.org/std/ops/trait.Fn.html
+    /// [`FnMut`]: https://doc.rust-lang.org/std/ops/trait.FnMut.html
     /// [`FnOnce`]: https://doc.rust-lang.org/std/ops/trait.FnOnce.html
     ///
     /// # `FusedIterator`
@@ -101,12 +101,12 @@ where
     ///
     /// [`FusedIterator`]: https://doc.rust-lang.org/stable/std/iter/trait.FusedIterator.html
     #[inline]
-    pub fn new(root: &'a T, children: F) -> Self {
+    pub fn new(root: &'a T, iter_children: F) -> Self {
         Self {
             visited: 0,
             current_depth: 0,
             queue: VecDeque::from(vec![(0, root)]),
-            children,
+            iter_children,
         }
     }
 }
@@ -114,7 +114,7 @@ where
 impl<'a, T, F, I> Iterator for DftPreRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     type Item = (usize, &'a T);
@@ -140,7 +140,7 @@ where
 
                 let before_len = self.queue.len();
 
-                for child in (self.children)(node) {
+                for child in (self.iter_children)(node) {
                     self.queue.insert(i + 1, (depth + 1, child));
                 }
                 self.visited += 1;
@@ -166,7 +166,7 @@ where
 impl<'a, T, F, I> FusedIterator for DftPreRev<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
 }

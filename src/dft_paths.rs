@@ -35,7 +35,7 @@ use crate::DftPre;
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = DftPaths::new(&tree, |node| node.1.iter());
 ///
@@ -55,7 +55,7 @@ use crate::DftPre;
 pub struct DftPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     path: Vec<&'a T>,
@@ -65,13 +65,13 @@ where
 impl<'a, T, F, I> DftPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     /// Creates a `DftPaths`, where `root` is the
     /// starting `Node`.
     ///
-    /// The `children` [`Fn`] is (lazily) called
+    /// The `iter_children` [`FnMut`] is (lazily) called
     /// for each `Node` as needed, where the
     /// returned [`Iterator`] produces the child
     /// `Node`s for the given `Node`.
@@ -84,11 +84,11 @@ where
     ///
     /// # "`FnOnce`"
     ///
-    /// The [`Fn`] is a [`FnOnce`] from the point-of-view of
-    /// a `Node`, as `children` is at most called once for
+    /// The [`FnMut`] is a [`FnOnce`] from the point-of-view of
+    /// a `Node`, as `iter_children` is at most called once for
     /// each individual `Node`.
     ///
-    /// [`Fn`]: https://doc.rust-lang.org/std/ops/trait.Fn.html
+    /// [`FnMut`]: https://doc.rust-lang.org/std/ops/trait.FnMut.html
     /// [`FnOnce`]: https://doc.rust-lang.org/std/ops/trait.FnOnce.html
     ///
     /// # `FusedIterator`
@@ -99,8 +99,8 @@ where
     ///
     /// [`FusedIterator`]: https://doc.rust-lang.org/stable/std/iter/trait.FusedIterator.html
     #[inline]
-    pub fn new(root: &'a T, children: F) -> Self {
-        let mut iter = DftPre::new(root, children);
+    pub fn new(root: &'a T, iter_children: F) -> Self {
+        let mut iter = DftPre::new(root, iter_children);
 
         // Safe to use `unwrap` as `DftPre` with `root` at least produces `root`
         Self {
@@ -113,7 +113,7 @@ where
 impl<'a, T, F, I> Iterator for DftPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     type Item = Vec<&'a T>;
@@ -134,7 +134,7 @@ where
 impl<'a, T, F, I> FusedIterator for DftPaths<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
 }

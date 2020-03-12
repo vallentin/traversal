@@ -33,7 +33,7 @@ use std::iter::{Extend, FusedIterator};
 /// ]);
 ///
 /// // `&tree` represents the root `Node`.
-/// // The `Fn(&Node) -> Iterator<Item = &Node>` returns
+/// // The `FnMut(&Node) -> Iterator<Item = &Node>` returns
 /// // an `Iterator` to get the child `Node`s.
 /// let iter = Bft::new(&tree, |node| node.1.iter());
 ///
@@ -54,23 +54,23 @@ use std::iter::{Extend, FusedIterator};
 pub struct Bft<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     queue: VecDeque<(usize, &'a T)>,
-    children: F,
+    iter_children: F,
 }
 
 impl<'a, T, F, I> Bft<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     /// Creates a `Bft`, where `root` is the
     /// starting `Node`.
     ///
-    /// The `children` [`Fn`] is (lazily) called
+    /// The `iter_children` [`FnMut`] is (lazily) called
     /// for each `Node` as needed, where the
     /// returned [`Iterator`] produces the child
     /// `Node`s for the given `Node`.
@@ -83,11 +83,11 @@ where
     ///
     /// # "`FnOnce`"
     ///
-    /// The [`Fn`] is a [`FnOnce`] from the point-of-view of
-    /// a `Node`, as `children` is at most called once for
+    /// The [`FnMut`] is a [`FnOnce`] from the point-of-view of
+    /// a `Node`, as `iter_children` is at most called once for
     /// each individual `Node`.
     ///
-    /// [`Fn`]: https://doc.rust-lang.org/std/ops/trait.Fn.html
+    /// [`FnMut`]: https://doc.rust-lang.org/std/ops/trait.FnMut.html
     /// [`FnOnce`]: https://doc.rust-lang.org/std/ops/trait.FnOnce.html
     ///
     /// # `FusedIterator`
@@ -98,10 +98,10 @@ where
     ///
     /// [`FusedIterator`]: https://doc.rust-lang.org/stable/std/iter/trait.FusedIterator.html
     #[inline]
-    pub fn new(root: &'a T, children: F) -> Self {
+    pub fn new(root: &'a T, iter_children: F) -> Self {
         Self {
             queue: VecDeque::from(vec![(0, root)]),
-            children,
+            iter_children,
         }
     }
 }
@@ -109,7 +109,7 @@ where
 impl<'a, T, F, I> Iterator for Bft<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
     type Item = (usize, &'a T);
@@ -117,7 +117,7 @@ where
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((depth, node)) = self.queue.pop_front() {
-            let children = (self.children)(node);
+            let children = (self.iter_children)(node);
             self.queue.extend(children.map(|child| (depth + 1, child)));
 
             Some((depth, node))
@@ -130,7 +130,7 @@ where
 impl<'a, T, F, I> FusedIterator for Bft<'a, T, F, I>
 where
     T: ?Sized,
-    F: Fn(&'a T) -> I,
+    F: FnMut(&'a T) -> I,
     I: Iterator<Item = &'a T>,
 {
 }

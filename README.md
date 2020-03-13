@@ -62,7 +62,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-every-range = "0.1"
+traversal = "0.1"
 ```
 
 ## Algorithms

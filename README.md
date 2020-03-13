@@ -56,6 +56,15 @@ When [`next`] is called, then traversal only processes the
 [Laziness]: https://doc.rust-lang.org/std/iter/index.html#laziness
 [adapters]: https://doc.rust-lang.org/std/iter/index.html#adapters
 
+## Usage
+
+Add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+every-range = "0.1"
+```
+
 ## Algorithms
 
 ```text

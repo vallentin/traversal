@@ -9,8 +9,8 @@ use std::iter::FusedIterator;
 ///
 /// `DftCycles` produces all paths that contain a [cycle].
 /// Thereby all [`Vec`]`<T>`s produced are a path
-/// containing a cycle, as in `last()` is connected
-/// to `first()`.
+/// containing a cycle, as in [`last()`] is connected
+/// to [`first()`].
 ///
 /// [`Vec`]: https://doc.rust-lang.org/stable/std/vec/struct.Vec.html
 /// [`last()`]: https://doc.rust-lang.org/stable/std/vec/struct.Vec.html#method.last

@@ -1,5 +1,6 @@
 # traversal
 
+[![Build Status](https://github.com/vallentin/traversal/workflows/Rust/badge.svg)](https://github.com/vallentin/traversal/actions?query=workflow%3ARust)
 [![Build Status](https://travis-ci.org/vallentin/traversal.svg?branch=master)](https://travis-ci.org/vallentin/traversal)
 [![Latest Version](https://img.shields.io/crates/v/traversal.svg)](https://crates.io/crates/traversal)
 [![Docs](https://docs.rs/traversal/badge.svg)](https://docs.rs/traversal)
